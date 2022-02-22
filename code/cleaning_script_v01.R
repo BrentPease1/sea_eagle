@@ -149,3 +149,12 @@ d_new <- d %>%
 # lodging cost - clean out characters / text 
 # hourly_wage - mess
 # n_biriders_visit1 / 2 /3 - would be nice to clean these up / categorize these
+
+# FWIW, here's the tidyverse way to put responses into one column
+d_new %>% 
+  pivot_longer(accomodation_friend:accomodation_none,
+               names_to = "accomodation_name", 
+               values_to = "accomodation_value") %>%
+  dplyr::select(respond_id, accomodation_name, accomodation_value) %>% 
+  filter(!is.na(accomodation_value))
+  
