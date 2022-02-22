@@ -135,6 +135,10 @@ d_new <- d %>%
   setNames(., new_names) %>% 
   dplyr::filter(!row_number() == 1) # drop the first row
 
+# ~ 200 respondents that didn't attempt to see eagle?
+d_new %>% 
+  filter(attempt_us == "Yes" | attempt_ca == "Yes")
+
 # COLUMNS THAT COULD USE SOME CLEANING (plus notes)
 # date_first
 # location
@@ -148,7 +152,7 @@ d_new <- d %>%
 # meal_cost - clean out characters/ranges
 # lodging cost - clean out characters / text 
 # hourly_wage - mess
-# n_biriders_visit1 / 2 /3 - would be nice to clean these up / categorize these
+# n_birders_visit1 / 2 /3 - would be nice to clean these up / categorize these
 
 # FWIW, here's the tidyverse way to put responses into one column
 d_new %>% 
