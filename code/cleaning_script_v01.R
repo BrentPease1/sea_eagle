@@ -8,7 +8,7 @@ library(zoo)
 
 setwd(here::here("Data/survey_monkey"))
 
-d <- readxl::read_xlsx("survey_monkey_sea_eagle_2022_02_22.xlsx")
+d <- readxl::read_xlsx(here("Data/survey_monkey/survey_monkey_sea_eagle_2022_02_22.xlsx"))
 
 # first row which contains response categories
 # creates a named charater vector
@@ -136,8 +136,13 @@ d_new <- d %>%
   dplyr::filter(!row_number() == 1) # drop the first row
 
 # ~ 200 respondents that didn't attempt to see eagle?
-d_new %>% 
+# drop them
+d_new <- d_new %>% 
   filter(attempt_us == "Yes" | attempt_ca == "Yes")
+
+# remove individuals less than 18 years of age
+d_new <- d_new %>%
+  filter(age18 == 'Yes')
 
 # COLUMNS THAT COULD USE SOME CLEANING (plus notes)
 # date_first
