@@ -144,6 +144,61 @@ d_new <- d_new %>%
 d_new <- d_new %>%
   filter(age18 == 'Yes')
 
+# Feb 23 - Neil here - I'm going to save the file to edit it 
+write_csv(d_new, "sea_eagle_cleaned_2022_02_23.csv")
+
+# OK, I manually cleaned the four cost columns (gas, airfare, meal, lodging)
+# I left the original columns; the new ones are
+# gas_cost_new, airfare_cost_new, meal_cost_new, and lodging_cost_new
+# Some notes
+## for cases when a range of values was reported (e.g., 80-100), I entered the mean
+## One person reported gas in gallons, so I converted to price based on average cost of gas in ME in january 2022
+## several cases reported costs in CAD; I converted these to USD
+## Left NA entries as NA; only entered 0 when that was what was entered
+cost_corrected <- read_csv("sea_eagle_cleaned_2022_02_23_cost_corrections.csv")
+
+# A couple outliers (>$500) that might data entry errors by respondents?
+cost_corrected %>% 
+  ggplot(aes(x = gas_cost_new)) + 
+  geom_histogram(color = "gray20", 
+                 fill = "gray80") + 
+  geom_vline(aes(xintercept = median(gas_cost_new, na.rm = TRUE)),
+             color = "red",
+             size = 2) +
+  geom_label(x = 250, 
+             y = 125,
+             aes(label = paste0("Median gas cost: $",
+                                median(gas_cost_new, na.rm = TRUE),
+                                " USD")))
+
+# only 23 respondents purchased airline tickets
+filter(cost_corrected, airfare_cost_new > 0) %>% 
+  ggplot(aes(x = airfare_cost_new)) + 
+  geom_histogram(color = "gray20", 
+                 fill = "gray80") + 
+  geom_vline(aes(xintercept = median(airfare_cost_new, na.rm = TRUE)),
+             color = "red",
+             size = 2) +
+  geom_label(x = 750, 
+             y = 1.5,
+             aes(label = paste0("Median airfare cost: $",
+                                median(airfare_cost_new, na.rm = TRUE),
+                                " USD")))
+
+cost_corrected %>% 
+  ggplot(aes(x = meal_cost_new)) + 
+  geom_histogram(color = "gray20", 
+                 fill = "gray80") + 
+  geom_vline(aes(xintercept = median(meal_cost_new, na.rm = TRUE)),
+             color = "red",
+             size = 2) +
+  geom_label(x = 300, 
+             y = 75,
+             aes(label = paste0("Median meal cost: $",
+                                median(meal_cost_new, na.rm = TRUE),
+                                " USD")))
+
+
 # COLUMNS THAT COULD USE SOME CLEANING (plus notes)
 # date_first
 # location
@@ -152,18 +207,17 @@ d_new <- d_new %>%
 # number_passengers - ugh this one's a mess
 # n_nights - needs to have characters cleaned out
 # birding_time - this one's a mess. have to clean out characters
-# gas_cost - clean out characters / ranges
-# airfare_cost - clean out characters / text
-# meal_cost - clean out characters/ranges
-# lodging cost - clean out characters / text 
+# gas_cost - DONE 2/23/22 by Neil
+# airfare_cost - DONE 2/23/22 by Neil
+# meal_cost - DONE 2/23/22 by Neil
+# lodging cost - DONE 2/23/22 by Neil 
 # hourly_wage - mess
 # n_birders_visit1 / 2 /3 - would be nice to clean these up / categorize these
 
 # FWIW, here's the tidyverse way to put responses into one column
-d_new %>% 
-  pivot_longer(accomodation_friend:accomodation_none,
-               names_to = "accomodation_name", 
-               values_to = "accomodation_value") %>%
-  dplyr::select(respond_id, accomodation_name, accomodation_value) %>% 
-  filter(!is.na(accomodation_value))
-  
+# d_new %>% 
+#   pivot_longer(accomodation_friend:accomodation_none,
+#                names_to = "accomodation_name", 
+#                values_to = "accomodation_value") %>%
+#   dplyr::select(respond_id, accomodation_name, accomodation_value) %>% 
+#   filter(!is.na(accomodation_value))
