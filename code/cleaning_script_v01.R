@@ -206,7 +206,7 @@ cost_corrected %>%
 # carpool - change N/A to NA #DONE 3/3/2022 BSP
 # number_passengers - ugh this one's a mess # WORKING 3/3/2022 BSP
 # n_nights - needs to have characters cleaned out ### DONE 3/3/2022 BSP
-# birding_time - this one's a mess. have to clean out characters
+# birding_time - this one's a mess. have to clean out characters # DONE 3/3/2022 BSP
 # gas_cost - DONE 2/23/22 by Neil
 # airfare_cost - DONE 2/23/22 by Neil
 # meal_cost - DONE 2/23/22 by Neil
