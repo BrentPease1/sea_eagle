@@ -205,7 +205,7 @@ cost_corrected %>%
 # observation_duration - some large values (> 1 day)
 # carpool - change N/A to NA
 # number_passengers - ugh this one's a mess # WORKING 3/3/2022 BSP
-# n_nights - needs to have characters cleaned out
+# n_nights - needs to have characters cleaned out ### DONE 3/3/2022 BSP
 # birding_time - this one's a mess. have to clean out characters
 # gas_cost - DONE 2/23/22 by Neil
 # airfare_cost - DONE 2/23/22 by Neil
