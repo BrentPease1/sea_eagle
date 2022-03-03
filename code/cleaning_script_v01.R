@@ -211,7 +211,7 @@ cost_corrected %>%
 # airfare_cost - DONE 2/23/22 by Neil
 # meal_cost - DONE 2/23/22 by Neil
 # lodging cost - DONE 2/23/22 by Neil 
-# hourly_wage - mess
+# hourly_wage - # DONE 3/3/22 BSP
 # n_birders_visit1 / 2 /3 - would be nice to clean these up / categorize these
 # travel_mode_5 # DONE 3/3/22 BSP
 
