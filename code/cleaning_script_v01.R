@@ -214,6 +214,7 @@ cost_corrected %>%
 # hourly_wage - # DONE 3/3/22 BSP
 # n_birders_visit1 / 2 /3 - would be nice to clean these up / categorize these # DONE 3/3/2022 BSP
 # travel_mode_5 # DONE 3/3/22 BSP
+# accomodation_location # MOSTLY DONE 3/3/22 BSP
 
 
 # FWIW, here's the tidyverse way to put responses into one column
