@@ -202,8 +202,8 @@ cost_corrected %>%
 # COLUMNS THAT COULD USE SOME CLEANING (plus notes)
 # date_first # DONE 2/23/22 BSP
 # location # DONE 2/23/22 BSP
-# observation_duration - some large values (> 1 day)
-# carpool - change N/A to NA
+# observation_duration - some large values (> 1 day) # CHECKED 3/3/2022 BSP - I think this is okay. I looked at large values and these folks stayed overnight 3,4, and 9 nights, and reported more than one trip. So, cumulative birding time checks out? dedication... 
+# carpool - change N/A to NA #DONE 3/3/2022 BSP
 # number_passengers - ugh this one's a mess # WORKING 3/3/2022 BSP
 # n_nights - needs to have characters cleaned out ### DONE 3/3/2022 BSP
 # birding_time - this one's a mess. have to clean out characters
@@ -213,6 +213,8 @@ cost_corrected %>%
 # lodging cost - DONE 2/23/22 by Neil 
 # hourly_wage - mess
 # n_birders_visit1 / 2 /3 - would be nice to clean these up / categorize these
+# travel_mode_5 # DONE 3/3/22 BSP
+
 
 # FWIW, here's the tidyverse way to put responses into one column
 # d_new %>% 
