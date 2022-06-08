@@ -31,6 +31,7 @@ other_cleaning <- other_cleaning %>%
          carpool, carpool_count,
          overnight, overnight_count,
          hourly_wage, years_birding,
+         ebird,
          how_many_other_birders_1,
          how_many_other_birders_2,
          how_many_other_birders_3) %>%
@@ -48,7 +49,8 @@ out <- out %>%
   unnest(location_attempt_sep) %>%
   group_by(respond_id) %>%
   mutate(respond_id_count = n()) %>%
-  ungroup()
+  ungroup() %>%
+  replace_na(list(ebird = "No")) # clean up ebird
 
 # clean up zips
 tmp <- out$location_attempt_sep
