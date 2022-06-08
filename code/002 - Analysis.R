@@ -18,7 +18,9 @@ if(!(file.exists(here("Data/survey_monkey/sea_eagle_cleaning_2022_03_22_geocoded
 source(here('code/001 - Data Prep - add ebird status to cleaned data.R'))
 
 clean_data <- clean_data %>%
-  left_join(x = clean_data, y = out %>% filter(!duplicated(respond_id)) %>% select(respond_id, ebird), by = 'respond_id')
+  left_join(x = clean_data, y = out %>% 
+              filter(!duplicated(respond_id)) %>% 
+              select(respond_id, ebird, starts_with('donation')), by = 'respond_id')
 
 rm(out)
 
@@ -30,7 +32,52 @@ clean_data <- clean_data %>%
   left_join(x = clean_data, y = edu %>% filter(!duplicated(respond_id)) %>% select(respond_id, highest_education), by = 'respond_id')
 rm(edu)
 
+
+
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
+# -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
+
+
+
+## Summary of people's willingness to 'donate' to see the bird
+## create a dataframe for each of the hypothetical entry points
+five <- as.data.frame(prop.table(table(clean_data$donation5))*100)
+five$value <- "$5"
+
+twentyfive <- as.data.frame(prop.table(table(clean_data$donation25))*100)
+twentyfive$value <- "$25"
+
+fifty <- as.data.frame(prop.table(table(clean_data$donation50))*100)
+fifty$value <- "$50"
+
+seventyfive <- as.data.frame(prop.table(table(clean_data$donation75))*100)
+seventyfive$value <- "$75"
+
+hundred <- as.data.frame(prop.table(table(clean_data$donation100))*100)
+hundred$value <- "$100"
+
+twohundred <- as.data.frame(prop.table(table(clean_data$donation200))*100)
+twohundred$value <- "$200"
+
+conservation_potential <- bind_rows(five, twentyfive, fifty, seventyfive, hundred, twohundred)
+
+## now make a figure representing this
+ggplot(conservation_potential)+
+  geom_bar(aes(x=value, y=Freq, fill=Var1), stat="identity")+
+  xlim("$200", "$100", "$75", "$50", "$25", "$5")+
+  coord_flip()+
+  theme_classic()+
+  xlab("Theoretical donation value")+
+  ylab("Proportion")+
+  scale_fill_manual(values=c('grey20','grey76'), name="Response",
+                    breaks=c("Yes", "No"),
+                    labels=c("Yes", "No"))
+
+
+# -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
+# -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
+
+
 
 ## Apply values to calculate travel cost
 ## standard operating cost of automobile (cents/mi) 
@@ -208,3 +255,23 @@ with_time_adjusted_value*eBird_total_estimate
 
 without_time_adjusted_value*birders_total_estimate
 with_time_adjusted_value*birders_total_estimate
+
+
+## Total conservation funds
+conservation_potential$estimate1 <- eBird_total_estimate
+
+conservation_potential$estimate2 <- birders_total_estimate
+
+conservation_total_estimate <- conservation_potential %>%
+  filter(Var1 == "Yes") %>%
+  arrange(Freq) %>%
+  mutate(total_freq = Freq - lag(Freq, default = 0)) %>%
+  mutate(value_cost=as.integer(as.character(gsub("\\$","", value)))) %>%
+  group_by(value) %>% 
+  summarise(funds1=(((total_freq/100)*estimate1)*value_cost),
+            funds2=(((total_freq/100)*estimate2)*value_cost))
+
+
+conservation_total_estimate %>%
+  summarise(ebird = sum(funds1),
+            birders = sum(funds2))

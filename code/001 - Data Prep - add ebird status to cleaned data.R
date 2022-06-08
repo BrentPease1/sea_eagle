@@ -8,7 +8,8 @@ cost_corrected <- cost_corrected %>% select(respond_id, consent,
                                             contains('_new'),
                                             age, gender,
                                             gender_other, race, marital_status,
-                                            marital_status_other, employment_status)
+                                            marital_status_other, employment_status,
+                                            donation5, donation25, donation50, donation75, donation100, donation200)
 
 date_location <- read_csv(here("Data/survey_monkey/sea_eagle_2022_02_22_date_location.csv"))
 date_location <- date_location %>% 
