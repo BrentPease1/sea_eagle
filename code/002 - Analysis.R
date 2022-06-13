@@ -2,7 +2,7 @@ library(tidyverse)
 library(here)
 library(Hmisc)
 library(broom)
-
+library(modelsummary)
 
 # bring in data with distances calculated
 if(!(file.exists(here("Data/survey_monkey/sea_eagle_cleaning_2022_03_22_geocoded.csv")))){
@@ -149,7 +149,9 @@ write.csv(clean_data, file = here("Data/cleaned_responses/sea_eagle_cleaning_202
 
 ## Run a regression model
 no_time <- glm(log1p(total_travel_cost) ~ overnight + gender + marital_status +
-                 employment_status + highest_education + age + carpool, data=clean_data, family=gaussian)
+                 employment_status + highest_education + age + carpool, 
+               data = clean_data, 
+               family=gaussian)
 
 no_time_summary <- tidy(no_time)
 
@@ -164,7 +166,8 @@ sum(exp(no_time$fitted.values))
 
 # Run a regression model
 yes_time <- glm(log1p(total_travel_cost_time) ~ overnight + gender + marital_status +
-                 employment_status + highest_education + age + carpool, data=clean_data, family=gaussian)
+                 employment_status + highest_education + age + carpool,
+                data=clean_data, family=gaussian)
 
 yes_time_summary <- tidy(yes_time)
 
@@ -176,8 +179,22 @@ with_time_adjusted_value <- mean(exp(yes_time$fitted.values))
 # The overall estimate of the event with opportunity cost of time included - using only the respondents
 sum(exp(yes_time$fitted.values))
 
+# estimate models, save output
+models <- list(
+  "Without Opportunity Cost" = glm(log1p(total_travel_cost) ~ overnight + gender + marital_status +
+                                      employment_status + highest_education + age + carpool, 
+                                    data = clean_data, 
+                                    family=gaussian),
+  "With Opportunity Cost" = glm(log1p(total_travel_cost_time) ~ overnight + gender + marital_status +
+                                  employment_status + highest_education + age + carpool,
+                                data=clean_data, family=gaussian)
+)
 
-
+modelsummary(models, 
+             fmt = 1,
+             estimate = c("{estimate} ({std.error}){stars}"),
+             statistic = NULL,
+             output = here('Results/table of model results.docx'))
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
 
