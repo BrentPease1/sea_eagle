@@ -153,6 +153,9 @@ write.csv(clean_data, file = here("Data/cleaned_responses/sea_eagle_cleaning_202
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
 
+# just get US-based visits
+clean_data <- clean_data %>%
+  filter(attempt_us == "Yes")
 
 ## Run a regression model
 no_time <- glm(log1p(total_travel_cost) ~ overnight + gender + marital_status +
