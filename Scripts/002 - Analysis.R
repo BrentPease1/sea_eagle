@@ -3,6 +3,9 @@ library(here)
 library(Hmisc)
 library(broom)
 library(modelsummary)
+library(auk)
+
+auk::auk_set_ebd_path(here('Data/ebd_US_stseag_prv_relApr-2022'))
 
 # bring in data with distances calculated
 if(!(file.exists(here("Data/survey_monkey/sea_eagle_cleaning_2022_03_22_geocoded.csv")))){
@@ -15,7 +18,7 @@ if(!(file.exists(here("Data/survey_monkey/sea_eagle_cleaning_2022_03_22_geocoded
 
 # need a few columns that I forgot to add in 001 - Data Prep - bring together and get distances
 # script just has all "bring together" code and skips geocoding
-source(here('code/001 - Data Prep - add ebird status to cleaned data.R'))
+source(here('Scripts/001 - Data Prep - add ebird status to cleaned data.R'))
 
 clean_data <- clean_data %>%
   left_join(x = clean_data, y = out %>% 
@@ -67,13 +70,17 @@ ggplot(conservation_potential)+
   xlim("$200", "$100", "$75", "$50", "$25", "$5")+
   coord_flip()+
   theme_classic()+
-  xlab("Theoretical donation value")+
-  ylab("Proportion")+
+  xlab("Willingness to Pay for Viewing")+
+  ylab("Proportion of Respondents")+
   scale_fill_manual(values=c('grey20','grey76'), name="Response",
                     breaks=c("Yes", "No"),
                     labels=c("Yes", "No"))
+  
 
+ggsave(filename = here('Results/Figures/conservation_potential_prop_bar.jpg'),
+       dpi = 300, height = 8, width = 8, device = 'jpeg')
 
+rm(fifty, five, hundred, seventyfive, twentyfive, twohundred)
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
 
@@ -204,16 +211,27 @@ modelsummary(models,
 total_number_birders <- clean_data %>%
   select(date_text, ebird, how_many_other_birders_1, how_many_other_birders_2,
          how_many_other_birders_3)
+
 # using eBird data first
-
 # bring in eBird records
-ebird <- read_table(file = here('Data/ebd_US_stseag_prv_relApr-2022/ebd_US_stseag_prv_relApr-2022.txt'))
+#ebird <- read.table(file = here('Data/ebd_US_stseag_prv_relApr-2022/ebd_US_stseag_prv_relApr-2022.txt'), header = T)
 
+ebd <- auk_ebd(here('Data/ebd_US_stseag_prv_relApr-2022/ebd_US_stseag_prv_relApr-2022.txt'))
+
+output_file <- here("Data/ebd_US_stseag_prv_relApr-2022/ebd_filtered_stseag_June_14_2022.txt")
+
+ebd_stseag <-  auk_ebd(here('Data/ebd_US_stseag_prv_relApr-2022/ebd_US_stseag_prv_relApr-2022.txt')) %>% 
+  auk_bbox(bbox = c(-98.264460, 31.631650, -50.122370, 50.188692)) %>%
+  auk_date(date = c("2021-12-01", "2022-02-12")) %>% 
+  auk_filter(file = output_file)
+
+
+ebd_stseag <- read_ebd(output_file)
 
 # store some numbers
 total_number_birders_in_dataset <- nrow(clean_data)
 proportion_of_respondents_who_submitted_to_eBird <- as.data.frame(prop.table(table(clean_data$ebird))) %>% filter(Var1=="Yes") %>% .$Freq
-total_eBird_records <- nrow(ebird)
+total_eBird_records <- nrow(ebd_stseag)
 
 #eBird estimate
 (total_eBird_records*total_number_birders_in_dataset)/(total_number_birders_in_dataset*proportion_of_respondents_who_submitted_to_eBird)
