@@ -25,7 +25,7 @@ other_cleaning <- other_cleaning %>%
          carpool, carpool_count,
          overnight, overnight_count,
          hourly_wage, years_birding,
-         ebird,
+         ebird, twitter,
          how_many_other_birders_1,
          how_many_other_birders_2,
          how_many_other_birders_3) %>%

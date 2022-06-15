@@ -23,7 +23,7 @@ source(here('Scripts/001 - Data Prep - add ebird status to cleaned data.R'))
 clean_data <- clean_data %>%
   left_join(x = clean_data, y = out %>% 
               filter(!duplicated(respond_id)) %>% 
-              select(respond_id, ebird, starts_with('donation')), by = 'respond_id')
+              select(respond_id, ebird, twitter, starts_with('donation')), by = 'respond_id')
 
 rm(out)
 
@@ -218,18 +218,22 @@ total_number_birders <- clean_data %>%
 # using eBird data first
 # bring in eBird records
 #ebird <- read.table(file = here('Data/ebd_US_stseag_prv_relApr-2022/ebd_US_stseag_prv_relApr-2022.txt'), header = T)
+if(!file.exists(here("Data/ebd_US_stseag_prv_relApr-2022/ebd_filtered_stseag_June_14_2022.txt"))){
+  ebd <- auk_ebd(here('Data/ebd_US_stseag_prv_relApr-2022/ebd_US_stseag_prv_relApr-2022.txt'))
+  
+  output_file <- here("Data/ebd_US_stseag_prv_relApr-2022/ebd_filtered_stseag_June_14_2022.txt")
+  
+  ebd_stseag <-  auk_ebd(here('Data/ebd_US_stseag_prv_relApr-2022/ebd_US_stseag_prv_relApr-2022.txt')) %>% 
+    auk_bbox(bbox = c(-98.264460, 31.631650, -50.122370, 50.188692)) %>%
+    auk_date(date = c("2021-12-01", "2022-02-12")) %>% 
+    auk_filter(file = output_file)
+  
+} else{
+  output_file <- here("Data/ebd_US_stseag_prv_relApr-2022/ebd_filtered_stseag_June_14_2022.txt")
+  ebd_stseag <- read_ebd(output_file)
+}
 
-ebd <- auk_ebd(here('Data/ebd_US_stseag_prv_relApr-2022/ebd_US_stseag_prv_relApr-2022.txt'))
 
-output_file <- here("Data/ebd_US_stseag_prv_relApr-2022/ebd_filtered_stseag_June_14_2022.txt")
-
-ebd_stseag <-  auk_ebd(here('Data/ebd_US_stseag_prv_relApr-2022/ebd_US_stseag_prv_relApr-2022.txt')) %>% 
-  auk_bbox(bbox = c(-98.264460, 31.631650, -50.122370, 50.188692)) %>%
-  auk_date(date = c("2021-12-01", "2022-02-12")) %>% 
-  auk_filter(file = output_file)
-
-
-ebd_stseag <- read_ebd(output_file)
 
 # store some numbers
 total_number_birders_in_dataset <- nrow(clean_data)
@@ -279,9 +283,9 @@ model <- loess(max ~ as.numeric(date_first_seen), data=total_estimate)
 sum(predict(model))
 
 sum(total_estimate$max)
-sum(total_estimate$mean)
 
 birders_total_estimate <- sum(total_estimate$max)
+birders_total_estimate <- sum(total_estimate$mean)
 
 
 
