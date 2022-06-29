@@ -42,50 +42,6 @@ rm(edu)
 
 
 
-## Summary of people's willingness to 'donate' to see the bird
-## create a dataframe for each of the hypothetical entry points
-five <- as.data.frame(prop.table(table(clean_data$donation5))*100)
-five$value <- "$5"
-
-twentyfive <- as.data.frame(prop.table(table(clean_data$donation25))*100)
-twentyfive$value <- "$25"
-
-fifty <- as.data.frame(prop.table(table(clean_data$donation50))*100)
-fifty$value <- "$50"
-
-seventyfive <- as.data.frame(prop.table(table(clean_data$donation75))*100)
-seventyfive$value <- "$75"
-
-hundred <- as.data.frame(prop.table(table(clean_data$donation100))*100)
-hundred$value <- "$100"
-
-twohundred <- as.data.frame(prop.table(table(clean_data$donation200))*100)
-twohundred$value <- "$200"
-
-conservation_potential <- bind_rows(five, twentyfive, fifty, seventyfive, hundred, twohundred)
-
-## now make a figure representing this
-ggplot(conservation_potential)+
-  geom_bar(aes(x=value, y=Freq, fill=Var1), stat="identity")+
-  xlim("$200", "$100", "$75", "$50", "$25", "$5")+
-  coord_flip()+
-  theme_classic()+
-  xlab("Willingness to Pay for Viewing")+
-  ylab("Proportion of Respondents")+
-  scale_fill_manual(values=c('grey20','grey76'), name="Response",
-                    breaks=c("Yes", "No"),
-                    labels=c("Yes", "No"))
-  
-
-ggsave(filename = here('Results/Figures/conservation_potential_prop_bar.jpg'),
-       dpi = 300, height = 8, width = 8, device = 'jpeg')
-
-rm(fifty, five, hundred, seventyfive, twentyfive, twohundred)
-# -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
-# -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
-
-
-
 ## Apply values to calculate travel cost
 ## standard operating cost of automobile (cents/mi) 
 ## Bureau of Transportation Statistics
@@ -146,6 +102,10 @@ clean_data <- clean_data %>%
 clean_data <- clean_data %>%
   mutate(highest_education = ifelse(highest_education == 'GED', "Other (please specify)", highest_education))
 
+# just get US-based visits
+clean_data <- clean_data %>%
+  filter(attempt_us == "Yes")
+
 write.csv(clean_data, file = here("Data/cleaned_responses/sea_eagle_cleaning_2022_06_07_geocoded_travel_cost.csv"))
 
 
@@ -153,9 +113,52 @@ write.csv(clean_data, file = here("Data/cleaned_responses/sea_eagle_cleaning_202
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
 
-# just get US-based visits
-clean_data <- clean_data %>%
-  filter(attempt_us == "Yes")
+
+
+
+## Summary of people's willingness to 'donate' to see the bird
+## create a dataframe for each of the hypothetical entry points
+five <- as.data.frame(prop.table(table(clean_data$donation5))*100)
+five$value <- "$5"
+
+twentyfive <- as.data.frame(prop.table(table(clean_data$donation25))*100)
+twentyfive$value <- "$25"
+
+fifty <- as.data.frame(prop.table(table(clean_data$donation50))*100)
+fifty$value <- "$50"
+
+seventyfive <- as.data.frame(prop.table(table(clean_data$donation75))*100)
+seventyfive$value <- "$75"
+
+hundred <- as.data.frame(prop.table(table(clean_data$donation100))*100)
+hundred$value <- "$100"
+
+twohundred <- as.data.frame(prop.table(table(clean_data$donation200))*100)
+twohundred$value <- "$200"
+
+conservation_potential <- bind_rows(five, twentyfive, fifty, seventyfive, hundred, twohundred)
+
+## now make a figure representing this
+ggplot(conservation_potential)+
+  geom_bar(aes(x=value, y=Freq, fill=Var1), stat="identity")+
+  xlim("$200", "$100", "$75", "$50", "$25", "$5")+
+  coord_flip()+
+  theme_classic()+
+  xlab("Willingness to Pay for Viewing")+
+  ylab("Proportion of Respondents")+
+  scale_fill_manual(values=c('grey20','grey76'), name="Response",
+                    breaks=c("Yes", "No"),
+                    labels=c("Yes", "No"))
+
+
+ggsave(filename = here('Results/Figures/conservation_potential_prop_bar.jpg'),
+       dpi = 300, height = 8, width = 8, device = 'jpeg')
+
+rm(fifty, five, hundred, seventyfive, twentyfive, twohundred)
+
+# -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
+# -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
+# evaluate individual travel cost expenditure
 
 ## Run a regression model
 no_time <- glm(log1p(total_travel_cost) ~ overnight + gender + marital_status +
