@@ -284,12 +284,8 @@ sum(predict(model))
 
 sum(total_estimate$max)
 
-birders_total_estimate <- sum(total_estimate$max)
+# birders_total_estimate <- sum(total_estimate$max)
 birders_total_estimate <- sum(total_estimate$mean)
-
-
-
-
 
 ## Total economic estimates
 without_time_adjusted_value*eBird_total_estimate
@@ -317,3 +313,12 @@ conservation_total_estimate <- conservation_potential %>%
 conservation_total_estimate %>%
   summarise(ebird = sum(funds1),
             birders = sum(funds2))
+
+# Neil here, saving some variables for stan analysis
+setwd(here::here("Data/stan_data/"))
+save(
+  clean_data, 
+  birders_total_estimate, 
+  eBird_total_estimate,
+  file = "eagle_data_for_stan_v01.RData"
+)
