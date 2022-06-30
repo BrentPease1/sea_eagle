@@ -267,7 +267,9 @@ if(!file.exists(here("Data/ebd_US_stseag_prv_relApr-2022/ebd_filtered_stseag_Jun
 # store some numbers
 total_number_birders_in_dataset <- nrow(clean_data)
 proportion_of_respondents_who_submitted_to_eBird <- as.data.frame(prop.table(table(clean_data$ebird))) %>% filter(Var1=="Yes") %>% .$Freq
-total_eBird_records <- nrow(ebd_stseag)
+# total_eBird_records <- nrow(ebd_stseag)
+# changing to unique number of observers, not checklists
+total_eBird_records <- length(unique(ebd_stseag$observer_id))
 
 #eBird estimate
 (total_eBird_records*total_number_birders_in_dataset)/(total_number_birders_in_dataset*proportion_of_respondents_who_submitted_to_eBird)
@@ -297,12 +299,36 @@ total_estimate <- total_number_birders %>%
   summarise(mean=mean(c(how_many_other_birders_1,how_many_other_birders_2,
                       how_many_other_birders_3), na.rm=TRUE),
             max=max(c(how_many_other_birders_1,how_many_other_birders_2,
-                    how_many_other_birders_3), na.rm=TRUE))
+                    how_many_other_birders_3), na.rm=TRUE),
+            med = median(c(how_many_other_birders_1,how_many_other_birders_2,
+                           how_many_other_birders_3), na.rm=TRUE))
 
 ggplot(total_estimate, aes(x=date_first_seen, y=max))+
   geom_point()+
   geom_line()+
   stat_smooth(method="loess", se=FALSE)
+
+# trying to get a handle on variation...
+total_number_birders %>% 
+  as_tibble() %>% 
+  dplyr::select(date_first_seen, how_many_other_birders_1:how_many_other_birders_3) %>% 
+  filter(!is.na(date_first_seen)) %>% 
+  ggplot(aes(x = date_first_seen, y = how_many_other_birders_1)) + 
+  geom_point(size = 2, alpha = 0.2) 
+
+total_estimate %>% 
+  pivot_longer(mean:med, names_to = "stat", values_to = "value") %>% 
+  ggplot(aes(x = date_first_seen, y = value, color = stat)) + 
+  geom_line() + 
+  geom_point()
+
+# does number of other birders estimated vary with observation duration?
+# filtering out observations that are more than a day
+# there is a relationship, but weak? 
+ggplot(filter(clean_data, minutes_observed < 1000), 
+       aes(x = log1p(minutes_observed), y = how_many_other_birders_1)) + 
+  geom_point(size = 2, alpha = 0.3, color = "darkslategray") + 
+  geom_smooth(method = "lm", color = "black")
 
 # ## get the smoothed values
 # ## This looks at how different the results would be if 
@@ -317,7 +343,9 @@ sum(total_estimate$max)
 #birders_total_estimate <- sum(total_estimate$max)
 birders_total_estimate <- sum(total_estimate$mean)
 
-
+# storing these to go to stan
+birders_total_estimate_mean <- sum(total_estimate$mean)
+birders_total_estimate_max <- sum(total_estimate$max)
 # TWITTER FTW
 
 source(here('Scripts/002 - Analysis - get twitter user information.R'))
@@ -369,7 +397,9 @@ conservation_total_estimate %>%
 setwd(here::here("Data/stan_data/"))
 save(
   clean_data, 
-  birders_total_estimate, 
+  birders_total_estimate_mean,
+  birders_total_estimate_max, 
   eBird_total_estimate,
-  file = "eagle_data_for_stan_v01.RData"
+  twitter_total_estimate,
+  file = "eagle_data_for_stan_v02.RData"
 )
