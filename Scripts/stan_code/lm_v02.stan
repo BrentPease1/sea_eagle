@@ -4,8 +4,10 @@ data {
   vector[N] Y_time; // accoutning for time
   int<lower = 1> K;
   matrix[N, K] X;
-  real birders_estimate;
+  real birders_estimate_mean;
+  real birders_estimate_max;
   real ebird_estimate;
+  real twitter_estimate;
 }
 
 transformed data {
@@ -49,10 +51,18 @@ generated quantities {
   real mean_cost_time;
   vector[N] p_Y;
   vector[N] p_Y_time;
-  real total_birders;
-  real total_birders_time;
+  
+  real total_birders_mean;
+  real total_birders_mean_time;
+  
+  real total_birders_max;
+  real total_birders_max_time;
+  
   real total_ebird;
   real total_ebird_time;
+  
+  real total_twitter;
+  real total_twitter_time;
   
   p_Y = Xc*b + Intercept;
   p_Y_time = Xc * b_time + Intercept_time;
@@ -61,9 +71,15 @@ generated quantities {
   mean_cost = mean(exp(p_Y) - 1);
   mean_cost_time = mean(exp(p_Y_time) - 1);
   
-  total_birders = mean_cost * birders_estimate;
-  total_birders_time = mean_cost_time * birders_estimate;
+  total_birders_mean = mean_cost * birders_estimate_mean;
+  total_birders_mean_time = mean_cost_time * birders_estimate_mean;
+  
+  total_birders_max = mean_cost * birders_estimate_max;
+  total_birders_max_time = mean_cost_time * birders_estimate_max;
   
   total_ebird = mean_cost * ebird_estimate;
   total_ebird_time = mean_cost_time * ebird_estimate;
+  
+  total_twitter = mean_cost * twitter_estimate;
+  total_twitter_time = mean_cost_time * twitter_estimate;
 }
