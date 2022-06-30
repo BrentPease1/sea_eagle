@@ -304,24 +304,46 @@ ggplot(total_estimate, aes(x=date_first_seen, y=max))+
   geom_line()+
   stat_smooth(method="loess", se=FALSE)
 
-## get the smoothed values
-## This looks at how different the results would be if 
-## we used a smoothed curve, instead of
-## the method above, but there was little difference
-model <- loess(max ~ as.numeric(date_first_seen), data=total_estimate)
-sum(predict(model))
+# ## get the smoothed values
+# ## This looks at how different the results would be if 
+# ## we used a smoothed curve, instead of
+# ## the method above, but there was little difference
+
+# model <- loess(max ~ as.numeric(date_first_seen), data=total_estimate)
+# sum(predict(model))
 
 sum(total_estimate$max)
 
-# birders_total_estimate <- sum(total_estimate$max)
+#birders_total_estimate <- sum(total_estimate$max)
 birders_total_estimate <- sum(total_estimate$mean)
 
-## Total economic estimates
-without_time_adjusted_value*eBird_total_estimate
-with_time_adjusted_value*eBird_total_estimate
 
-without_time_adjusted_value*birders_total_estimate
-with_time_adjusted_value*birders_total_estimate
+# TWITTER FTW
+
+source(here('Scripts/002 - Analysis - get twitter user information.R'))
+
+# store some numbers
+proportion_of_respondents_who_submitted_to_twitter <- as.data.frame(prop.table(table(clean_data$twitter))) %>% filter(Var1=="Yes") %>% .$Freq
+total_tweets_indicating_trip <- unname(twit_table[2])
+
+#twitter estimate
+(total_tweets_indicating_trip*total_number_birders_in_dataset)/(total_number_birders_in_dataset*proportion_of_respondents_who_submitted_to_twitter)
+
+twitter_total_estimate <- (total_tweets_indicating_trip*total_number_birders_in_dataset)/(total_number_birders_in_dataset*proportion_of_respondents_who_submitted_to_twitter)
+
+
+## Total economic estimates
+data.frame(Respondents = c(without_time_adjusted_value*birders_total_estimate,
+                           with_time_adjusted_value*birders_total_estimate),
+           eBird = c(without_time_adjusted_value*eBird_total_estimate,
+           with_time_adjusted_value*eBird_total_estimate),
+           Twitter = c(without_time_adjusted_value*twitter_total_estimate,
+                       with_time_adjusted_value*twitter_total_estimate), 
+           row.names = c('Without Opp. Cost of Time',
+                         "With Opp. Cost of Time"))
+
+
+
 
 
 ## Total conservation funds
