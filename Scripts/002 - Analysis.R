@@ -379,6 +379,8 @@ conservation_potential$estimate1 <- eBird_total_estimate
 
 conservation_potential$estimate2 <- birders_total_estimate
 
+conservation_potential$estimate3 <- twitter_total_estimate
+
 conservation_total_estimate <- conservation_potential %>%
   filter(Var1 == "Yes") %>%
   arrange(Freq) %>%
@@ -386,12 +388,14 @@ conservation_total_estimate <- conservation_potential %>%
   mutate(value_cost=as.integer(as.character(gsub("\\$","", value)))) %>%
   group_by(value) %>% 
   summarise(funds1=(((total_freq/100)*estimate1)*value_cost),
-            funds2=(((total_freq/100)*estimate2)*value_cost))
+            funds2=(((total_freq/100)*estimate2)*value_cost),
+            funds3=(((total_freq/100)*estimate3)*value_cost))
 
 
 conservation_total_estimate %>%
   summarise(ebird = sum(funds1),
-            birders = sum(funds2))
+            birders = sum(funds2),
+            twitter = sum(funds3))
 
 # Neil here, saving some variables for stan analysis
 setwd(here::here("Data/stan_data/"))
