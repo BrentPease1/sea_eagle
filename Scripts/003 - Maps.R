@@ -47,10 +47,10 @@ eagle_locs <- clean_data %>%
 pal <- qualitative_hcl(9, palette = 'Dark 2')[2]
 
 # bounding box for northeast
-northeast = st_bbox(c(xmin = -77.629395, xmax = -66.511230,
-                      ymin = 36.544949, ymax = 45.996962),
-                    crs = st_crs(4326)) |> 
-  st_as_sfc()
+# northeast = st_bbox(c(xmin = -77.629395, xmax = -66.511230,
+#                       ymin = 36.544949, ymax = 45.996962),
+#                     crs = st_crs(4326)) |> 
+#   st_as_sfc()
 
 northeast = st_bbox(c(xmin = -73.476563, xmax = -66.994629,
                       ymin = 41.244772, ymax = 45.127805),
@@ -63,8 +63,8 @@ northeast = st_bbox(c(xmin = -73.476563, xmax = -66.994629,
 us_states_map = tm_shape(states %>% 
                            filter(!(state_name %in% c('Hawaii','Alaska','Puerto Rico'))),
                          projection = 2163) + 
-  tm_polygons() + 
-  tm_layout(frame = FALSE,bg.color = NA) +
+  tm_polygons(col = '#d9d9d9') + 
+  tm_layout(frame = FALSE,bg.color = NA, inner.margins = c(rep(0.04, 4))) +
   tm_shape(clean_data, projection = 2163) +
   tm_symbols(col = pal,border.col = "white", size = 0.5) +
   tm_layout(legend.show = F) +
@@ -99,4 +99,13 @@ tmap_save(us_states_map, filename = here('Results/Figures/respondents_home_zip.j
                            grid::viewport(0.75, 0.85, width = 0.3, height = 0.3)))
 
 
+# -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
+# -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
 
+nam_map <- tm_shape(nam,projection = 2163) + 
+  tm_polygons(col = '#d9d9d9') + 
+  tm_layout(frame = FALSE,bg.color = NA, inner.margins = c(rep(0.04, 4))) 
+
+
+tmap_save(nam_map, filename = here('Results/Figures/nam_map.jpg'),
+          height = 8, width = 8, dpi = 300)
