@@ -101,11 +101,12 @@ tmap_save(us_states_map, filename = here('Results/Figures/respondents_home_zip.j
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
-
+par(bg=NA)
 nam_map <- tm_shape(nam,projection = 2163) + 
   tm_polygons(col = '#d9d9d9') + 
-  tm_layout(frame = FALSE,bg.color = NA, inner.margins = c(rep(0.04, 4))) 
+  tm_layout(frame = FALSE,inner.margins = c(rep(0.04, 4)),
+            bg.color = "#00000000", outer.bg.color = "#00000000") 
 
 
-tmap_save(nam_map, filename = here('Results/Figures/nam_map.jpg'),
-          height = 8, width = 8, dpi = 300)
+tmap_save(nam_map, filename = here('Results/Figures/nam_map.png'),
+          height = 8, width = 8, dpi = 300, bg = 'transparent')
