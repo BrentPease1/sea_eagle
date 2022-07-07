@@ -4,6 +4,7 @@ library(Hmisc)
 library(broom)
 library(modelsummary)
 library(auk)
+library(scales)
 
 auk::auk_set_ebd_path(here('Data/ebd_US_stseag_prv_relApr-2022'))
 
@@ -308,6 +309,24 @@ ggplot(total_estimate, aes(x=date_first_seen, y=max))+
   geom_line()+
   stat_smooth(method="loess", se=FALSE)
 
+windowsFonts(A = windowsFont("Agrandir"))
+ggplot(total_number_birders, aes(x=date_first_seen)) + 
+  geom_histogram(binwidth=2, colour="white") +
+  scale_x_date(labels = date_format("%d-%b"),
+               breaks = seq(min(total_number_birders$date_first_seen, na.rm = T)-5, max(total_number_birders$date_first_seen, na.rm = T)+5, 7),
+               limits = c(as.Date("2021-12-01"), as.Date("2022-01-31"))) +
+  ylab("Number of Birders") + xlab("Date First Attempted To View Eagle") +
+  theme_classic() + theme(axis.text.x = element_text(angle=45, hjust = 1, family = "A",
+                                                     size = 45),
+                          text = element_text(family = "A", size =45),
+                          panel.background = element_rect(fill='transparent'), #transparent panel bg
+                          plot.background = element_rect(fill='transparent', color=NA), #transparent plot bg
+                          panel.grid.major = element_blank(), #remove major gridlines
+                          panel.grid.minor = element_blank(), #remove minor gridlines
+                          legend.background = element_rect(fill='transparent'), #transparent legend bg
+                          legend.box.background = element_rect(fill='transparent'))
+ggsave(filename = here('Results/Figures/date_first_seen_hist.png'), height = 8, width = 12,
+       dpi= 300, plot = last_plot())
 # trying to get a handle on variation...
 total_number_birders %>% 
   as_tibble() %>% 
