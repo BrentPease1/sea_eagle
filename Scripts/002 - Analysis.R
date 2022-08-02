@@ -5,8 +5,9 @@ library(broom)
 library(modelsummary)
 library(auk)
 library(scales)
+library(colorspace)
 
-auk::auk_set_ebd_path(here('Data/ebd_US_stseag_prv_relApr-2022'))
+#auk::auk_set_ebd_path(here('Data/ebd_US_stseag_prv_relApr-2022'))
 
 # cleaned data file
 if(!(file.exists(here('Data/cleaned_responses/sea_eagle_cleaning_2022_06_07_geocoded_travel_cost.csv')))){
@@ -164,8 +165,12 @@ twohundred <- as.data.frame(prop.table(table(clean_data$donation200))*100)
 twohundred$value <- "$200"
 
 conservation_potential <- bind_rows(five, twentyfive, fifty, seventyfive, hundred, twohundred)
+rm(five, twentyfive, fifty, seventyfive, hundred, twohundred)
 
+conservation_potential <- conservation_potential %>%
+  mutate(pct = Freq / 100)
 ## now make a figure representing this
+pal <- qualitative_hcl(9, palette = 'Dark 2')[2]
 ggplot(conservation_potential)+
   geom_bar(aes(x=value, y=Freq, fill=Var1), stat="identity")+
   xlim("$200", "$100", "$75", "$50", "$25", "$5")+
@@ -176,6 +181,23 @@ ggplot(conservation_potential)+
   scale_fill_manual(values=c('grey20','grey76'), name="Response",
                     breaks=c("Yes", "No"),
                     labels=c("Yes", "No"))
+
+ggplot(data = conservation_potential, aes(x = value, y = Freq, fill = Var1, label = scales::percent(pct, accuracy = 1))) +
+  geom_bar( stat="identity")+
+  xlim("$200", "$100", "$75", "$50", "$25", "$5")+
+  coord_flip()+
+  theme_classic()+
+  xlab("Willingness to Pay for Viewing")+
+  ylab("Percent of Respondents")+
+  scale_fill_manual(values=c('grey20','grey76'), name="Response",
+                    breaks=c("Yes", "No"),
+                    labels=c("Yes", "No")) +
+  geom_text(position="stack",hjust = 1,col="darkorange3",size=5) +
+  theme(axis.text = element_text(size = 20),
+        axis.title = element_text(size = 20),
+        legend.title = element_text(size = 16),
+        legend.text = element_text(size = 16))
+ # scale_y_continuous(labels = scales::percent)
 
 
 ggsave(filename = here('Results/Figures/conservation_potential_prop_bar.jpg'),
