@@ -207,6 +207,44 @@ rm(fifty, five, hundred, seventyfive, twentyfive, twohundred)
 
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
 # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
+
+# summarize individual costs
+clean_data %>%
+  filter(meal_cost_new > 0) %>%
+  summarise(food = mean(meal_cost_new, na.rm = T),
+            food_sd = sd(meal_cost_new, na.rm = T),
+            foodies = n())
+
+clean_data %>%
+  filter(gas_cost_new > 0) %>%
+  summarise(gas = mean(gas_cost_new, na.rm = T),
+            gas_sd = sd(gas_cost_new, na.rm = T),
+            gasses = n())
+
+clean_data %>%
+  filter(lodging_cost_new > 0) %>%
+  summarise(lodge = mean(lodging_cost_new, na.rm = T),
+            lodge_sd = sd(lodging_cost_new, na.rm = T),
+            lodges = n())
+
+clean_data %>%
+  filter(airfare_cost_new > 0) %>%
+  summarise(air = mean(airfare_cost_new, na.rm = T),
+            air_sd = sd(airfare_cost_new, na.rm = T),
+            airs = n())
+
+expenditure <- clean_data %>%
+  summarise(air = mean(airfare_cost_new, na.rm = T),
+            lodge = mean(lodging_cost_new, na.rm = T),
+            gas = mean(gas_cost_new, na.rm = T),
+            food = mean(meal_cost_new, na.rm = T))
+
+sum(expenditure)
+prop.table(expenditure)
+# -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
+# -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- # -- #
+
+
 # evaluate individual travel cost expenditure
 
 ## Run a regression model
