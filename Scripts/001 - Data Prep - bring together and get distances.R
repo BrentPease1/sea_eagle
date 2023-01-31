@@ -4,6 +4,9 @@ library(opencage)
 library(gmapsdistance)
 library(zipcodeR)
 
+
+oc_config()
+#2d327e55869242989d59d12b7ec7be27-73273
 set.api.key("AIzaSyAIpwnAajCTDB4y0r-NjF7Uew3pD-dFLww")
 download_zip_data(force = T)
 
@@ -18,10 +21,19 @@ cost_corrected <- cost_corrected %>% select(respond_id, consent,
                                             marital_status_other, employment_status)
 
 date_location <- read_csv(here("Data/survey_monkey/sea_eagle_2022_02_22_date_location.csv"))
+bad_flyers <- c('Na', "N/A", "NA", "n/a","N/a", "na", "N-a", "Nsa", "N1",
+                "NA - I was visiting relatives anyway",
+                "NA. again way to drive up your carbon consumption for your own selfish gratification those of you who did",
+                "Ma")
+
+flyers <- date_location %>% filter(!is.na(airfare_expense) & !(airfare_expense %in% bad_flyers) & airfare_expense != "0") %>% pull(unique(respondent_ID))
+all_people <- data.frame(respondent_ID = date_location$respondent_ID, flyer = 0)
+all_people$flyer <- ifelse(all_people$respondent_ID %in% flyers, 1, 0)
+date_location <- merge(date_location, all_people, by = "respondent_ID")
 date_location <- date_location %>% 
   mutate(bad_response = ifelse(is.na(bad_response), FALSE, TRUE)) %>%
   filter(bad_response == FALSE) %>%
-  select(respondent_ID, date_text, location_attempt, home_zip) %>%
+  select(respondent_ID, date_text, location_attempt, home_zip, flyer) %>%
   rename(respond_id = respondent_ID)
 
 other_cleaning <- read_csv(here("Data/survey_monkey/sea_eagle_2022_02_22_date_location.csv"))
@@ -39,6 +51,7 @@ other_cleaning <- other_cleaning %>%
 
 out <- merge(cost_corrected, date_location, by = 'respond_id')
 out <- merge(out, other_cleaning, by = 'respond_id')
+
 
 # get Lat/Lng information from the locations provided.
 # some require geocoding, others just require using the provided zip.
@@ -126,6 +139,9 @@ for(i in 1:nrow(out)){
       out$attempt_lng[i] <- zi$lng
     }
   }
+  if (i%%10 == 0) {
+    cat("completed", i, "\n")
+  }
 }
 
 # get lat/lng for home zip
@@ -149,6 +165,9 @@ for(i in 1:nrow(out)){
       out$home_lng[i] <- zi$lng
     }
   }
+  if (i%%10 == 0) {
+    cat("completed", i, "\n")
+  }
 }
 
 # calculate driving distance between home and location
@@ -159,6 +178,7 @@ for(i in 1:nrow(out)){
   
   out$travel_time_sec[i] <- gdis$Time
   out$travel_dist_meter[i] <- gdis$Distance
+
   
   if (i%%10 == 0) {
     cat("completed", i, "\n")
@@ -167,4 +187,5 @@ for(i in 1:nrow(out)){
 }
 
 write_csv(out, file = here('Data/survey_monkey/sea_eagle_cleaning_2022_03_22_geocoded.csv'))
+#write_csv(out, file = here('Data/survey_monkey/sea_eagle_cleaning_2023_01_31_geocoded.csv'))
 
