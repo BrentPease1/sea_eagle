@@ -1,3 +1,11 @@
+# Neil here
+# getting errors - seems like rstan is not compatible with R 4.2
+# https://github.com/stan-dev/rstan/wiki/Configuring-C---Toolchain-for-Windows
+# install.packages("StanHeaders", repos = c("https://mc-stan.org/r-packages/", getOption("repos")))
+# install.packages("rstan", repos = c("https://mc-stan.org/r-packages/", getOption("repos")))
+
+# okay - that still didn't work - I switched back to using R 4.0.3 (was trying to use 4.2) and it seems to be working now
+
 library(here)
 library(tidyverse)
 library(rstan)
@@ -107,7 +115,7 @@ ggplot(aes(x = mean, y = time_cost, color = source)) +
 
 setwd(here::here("Results/Figures"))
 ggsave(
-  "total_expenditure_with_max_v01.png", 
+  "total_expenditure_with_max_v02.png", 
   width = 4.5, 
   height = 3, 
   units = "in", 
@@ -161,7 +169,7 @@ summary(out,
 
 setwd(here::here("Results/Figures"))
 ggsave(
-  "total_expenditure_no_max_v01.png", 
+  "total_expenditure_no_max_v02.png", 
   width = 4.5, 
   height = 3, 
   units = "in", 
@@ -192,7 +200,7 @@ summary(out,
        y = "Predictor")
 
 ggsave(
-  "coefficients_v01.png", 
+  "coefficients_v02.png", 
   width = 6.5, 
   height = 3.75, 
   units = "in", 
@@ -219,4 +227,4 @@ result_summary <- summary(out,
 
 
 setwd(here::here("Results"))
-write_csv(result_summary, "result_summary_v01.csv")
+write_csv(result_summary, "result_summary_v02.csv")
