@@ -5,7 +5,7 @@ library(MetBrewer)
 
 setwd(here::here("Data/stan_data"))
 
-load("eagle_data_for_stan_v02.RData")
+load("eagle_data_for_stan_v03.RData")
 
 clean_data <- clean_data %>% 
   filter(across(c(overnight, gender, marital_status, employment_status, highest_education,
