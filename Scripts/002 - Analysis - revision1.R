@@ -496,5 +496,5 @@ save(
   birders_total_estimate_max, 
   eBird_total_estimate,
   twitter_total_estimate,
-  file = "eagle_data_for_stan_v02.RData"
+  file = "eagle_data_for_stan_v03.RData"
 )
