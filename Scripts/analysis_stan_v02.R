@@ -228,3 +228,4 @@ result_summary <- summary(out,
 
 setwd(here::here("Results"))
 write_csv(result_summary, "result_summary_v02.csv")
+save(out, file = "revision_analysis_stan_output_v01.RData")
