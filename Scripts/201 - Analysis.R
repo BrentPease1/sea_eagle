@@ -22,7 +22,7 @@ if(!(file.exists(here('Data/cleaned_responses/sea_eagle_cleaning_2022_06_07_geoc
     clean_data <- read_csv(here("Data/survey_monkey/sea_eagle_cleaning_2022_03_22_geocoded.csv"))
   }
   
-  # need a few columns that I forgot to add in 001 - Data Prep - bring together and get distances
+  # need a few columns that I forgot to add in 101 - Data Prep - bring together and get distances
   # script just has all "bring together" code and skips geocoding
   source(here('Scripts/001 - Data Prep - add ebird status to cleaned data.R'))
   

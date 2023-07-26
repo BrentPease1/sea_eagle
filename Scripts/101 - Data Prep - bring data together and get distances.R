@@ -6,12 +6,11 @@ library(zipcodeR)
 
 
 oc_config()
-#2d327e55869242989d59d12b7ec7be27-73273
-set.api.key("AIzaSyAIpwnAajCTDB4y0r-NjF7Uew3pD-dFLww")
+set.api.key("XXXXX") # set your own api key - Brent, in reference project
 download_zip_data(force = T)
 
 
-# try to bring things together to see where we are
+# Bring together cleaned eagle data
 cost_corrected <- read_csv(here("Data/survey_monkey/sea_eagle_cleaned_2022_02_23_cost_corrections.csv"))
 cost_corrected <- cost_corrected %>% select(respond_id, consent,
                                             age18, attempt_us, attempt_ca,
