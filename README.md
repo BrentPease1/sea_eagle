@@ -2,7 +2,7 @@
 
 ### [Brent S. Pease](https://peaselab.com), [Neil A. Gilbert](https://gilbertecology.com), [William R. Casola](https://scholar.google.com/citations?user=5Tepgy4AAAAJ), & [Kofi Akamani](https://academics.siu.edu/agriculture/forestry/faculty/akamani-kofi.php)
 
-### Data/code DOI: [![DOI](https://zenodo.org/badge/.svg)](https://zenodo.org/badge/latestdoi/)
+### Data/code DOI: [![DOI](https://zenodo.org/badge/462378107.svg)](https://zenodo.org/badge/latestdoi/462378107)
 
 #### Please contact the first author for questions about the code or data: Brent S. Pease (bpease1@siu.edu)
 __________________________________________________________________________________________________________________________________________
